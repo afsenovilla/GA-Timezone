@@ -99,7 +99,9 @@
         .time-zone .times {
             margin-top: 5px;
             text-align: left; /* Align times to the left */
-            padding-left: 35px; /* Add padding to the left of the times */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .separator {
             border-top: 1px solid #ccc;
@@ -272,6 +274,8 @@
                 { id: 'mexicoTime', timeZone: 'America/Mexico_City', label: '🇲🇽 Mexico' }
             ];
 
+            const baseDate = new Date(date);
+
             timeZones.forEach(zone => {
                 const element = document.getElementById(zone.id);
                 const options12 = {
@@ -288,7 +292,16 @@
                 };
                 const time12 = new Intl.DateTimeFormat('en-US', options12).format(date);
                 const time24 = new Intl.DateTimeFormat('en-US', options24).format(date);
-                element.querySelector('.times').innerHTML = `${time12}<br>${time24}`;
+
+                const zoneDate = new Date(date.toLocaleString('en-US', { timeZone: zone.timeZone }));
+                let dayChange = '';
+                if (zoneDate.getDate() > baseDate.getDate()) {
+                    dayChange = '<br><b>+1 day</b>';
+                } else if (zoneDate.getDate() < baseDate.getDate()) {
+                    dayChange = '<br><b>-1 day</b>';
+                }
+
+                element.querySelector('.times').innerHTML = `${time12}<br>${time24}${dayChange}`;
                 element.style.display = zone.timeZone !== place ? 'block' : 'none';
             });
         }
